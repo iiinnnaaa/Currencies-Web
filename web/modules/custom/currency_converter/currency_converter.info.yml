@@ -1,0 +1,6 @@
+name: Currency Converter
+description: Custom module for Drupal 9 for storing and converting currencies.
+package: Custom
+type: module
+core: 9.x
+core_version_requirement: ^8 || ^9 || ^10
