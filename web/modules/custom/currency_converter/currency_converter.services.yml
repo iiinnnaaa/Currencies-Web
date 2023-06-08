@@ -1,0 +1,4 @@
+services:
+  currency_converter.fixer_service:
+    class: Drupal\currency_converter\Services\FixerService
+    arguments: ['@config.factory', '@http_client_factory', '@logger.factory']

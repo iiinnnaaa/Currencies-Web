@@ -1,0 +1,6 @@
+currency_converter.admin:
+  title: 'Fixer API Integration'
+  route_name: currency_converter.fixer_form
+  parent: system.admin_config_system
+  description: 'Fixer API Integration settings'
+  weight: 10

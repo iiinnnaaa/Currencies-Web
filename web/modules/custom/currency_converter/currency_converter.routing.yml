@@ -1,0 +1,16 @@
+currency_converter.fixer:
+  path: '/fixer'
+  defaults:
+    _controller: '\Drupal\currency_converter\Controller\FixerController::getExchangeRates'
+    _title: 'Fixer Exchange Rates'
+  requirements:
+    _permission: 'access content'
+
+currency_converter.fixer_form:
+  path: '/admin/config/system/currency_converter'
+  defaults:
+    _title: 'Fixer API Integration Settings'
+    _form: '\Drupal\currency_converter\Form\FixerIntegrationSettingsForm'
+    _description: 'Configure the Fixer API Integration settings.'
+  requirements:
+    _permission: 'administer site configuration'
