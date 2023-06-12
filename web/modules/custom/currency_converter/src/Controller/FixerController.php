@@ -22,15 +22,16 @@ class FixerController extends ControllerBase{
 
   public function getExchangeRates(){
     $exchangeRates = $this->fixerService->getExchangeRates();
-    $usd = $exchangeRates['USD'];
 
-    dd($this->fixerService->convert(11, 'usd', 'amd'));
-
-    $content = [
-      '#theme' => 'fixer_exchange_theme',
+    return [
+      '#theme' => 'fixer-exchange-theme',
       '#exchange_rates' => $exchangeRates,
     ];
+  }
 
-    return $content;
+
+  public function convert(){
+    $convert = $this->fixerService->convert();
+
   }
 }

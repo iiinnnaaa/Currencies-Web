@@ -3,6 +3,14 @@
 /**
  * Implements hook_theme().
  */
-function currency_converter_theme(){
-
+function currency_converter_theme()
+{
+  return [
+    'fixer-exchange-theme' => [
+      'variables' => [
+        'title' => 'Default title',
+        'exchange_rates' => []
+      ],
+    ],
+  ];
 }

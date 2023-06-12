@@ -1,0 +1,14 @@
+<table>
+  <tr>
+    <th>{% trans %} Country {% endtrans %}</th>
+    <th>{% trans %} Rate {% endtrans %}</th>
+  </tr>
+
+  {% for key, data in exchange_rates %}
+    <tr>
+      <td>{{ key }}</td>
+      <td>{{ data }}</td>
+    </tr>
+  {% endfor %}
+</table>
+

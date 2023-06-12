@@ -41,7 +41,24 @@ class FixerService implements FixerServiceInterface
 
   public function convert($value, $from, $to)
   {
-    // TODO: write convert logic
-  }
+//    // Use API of fixer.io (paid plan)
+//    $client = $this->httpClientFactory->fromOptions();
+//    $convertUrl = $this->baseUrl . '/convert?access_key=' . $this->apiKey . '&from=' . $from . '&to=' . $to . '&amount=' . $value;
+//
+//    try {
+//      $response = $client->get($convertUrl);
+//      $data = Json::decode($response->getBody());
+//      return $data['converted'];
+//    } catch (\Exception $exception) {
+//      $this->logger->error('Error while converting values: @exception', ['@exception' => $exception->getMessage()]);
+//    }
+//  }
 
+    $rates = $this->getExchangeRates();
+    $to = strtoupper($to);
+
+    $convertedValue = $value * $rates[$to];
+
+    return round($convertedValue, 2);
+  }
 }
