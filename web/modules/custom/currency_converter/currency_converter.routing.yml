@@ -14,3 +14,11 @@ currency_converter.fixer_form:
     _description: 'Configure the Fixer API Integration settings.'
   requirements:
     _permission: 'administer site configuration'
+
+currency_converter.convert_form:
+  path: '/convert-currencies'
+  defaults:
+    _title: 'Example form'
+    _form: '\Drupal\currency_converter\Form\FixerIntegartionConvertValueForm'
+  requirements:
+    _permission: 'access content'
