@@ -1,0 +1,39 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for the Currency Converter module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function currency_converter_schema() {
+  $schema['currency_rates'] = [
+    'description' => 'Currencies table',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'The primary key of the table.',
+      ],
+      'country' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Country field',
+      ],
+      'rate' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'Currency rate field',
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
+
+  return $schema;
+}

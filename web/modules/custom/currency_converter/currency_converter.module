@@ -1,16 +1,33 @@
 <?php
 
+use Drupal\currency_converter\Services\FixerService;
+
 /**
  * Implements hook_theme().
  */
 function currency_converter_theme()
 {
   return [
-    'fixer-exchange-theme' => [
+    'currency-converter-rates' => [
       'variables' => [
-        'title' => 'Default title',
-        'exchange_rates' => []
+        'exchangeRates' => []
+      ],
+    ],
+    'currency-converter-convert' => [
+      'variables' => [
+        'convertedValue' => null
       ],
     ],
   ];
+}
+
+/**
+ * Implements hook_cron().
+ */
+function currency_converter_cron()
+{
+  $service = \Drupal::service('currency_converter.fixer_service');
+  $service->storeExchangeRates();
+
+  \Drupal::logger('currency_converter')->notice('Exchange rates are updated');
 }

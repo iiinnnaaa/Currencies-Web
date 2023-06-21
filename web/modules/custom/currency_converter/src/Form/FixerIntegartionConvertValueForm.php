@@ -2,14 +2,31 @@
 
 namespace Drupal\currency_converter\Form;
 
+use Drupal\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\currency_converter\Services\FixerServiceInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Implements an example form.
  */
 class FixerIntegartionConvertValueForm extends FormBase
 {
+
+  protected FixerServiceInterface $fixerService;
+
+  public function __construct(FixerServiceInterface $fixerService)
+  {
+    $this->fixerService = $fixerService;
+  }
+
+  public static function create(ContainerInterface|\Symfony\Component\DependencyInjection\ContainerInterface $container)
+  {
+    return new static(
+      $container->get('currency_converter.fixer_service')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -24,23 +41,18 @@ class FixerIntegartionConvertValueForm extends FormBase
    */
   public function buildForm(array $form, FormStateInterface $form_state)
   {
-//    dd($form_state);
     $form['amount'] = [
       '#type' => 'textfield',
+      '#placeholder' => '123',
       '#title' => $this->t('Amount'),
     ];
-//    $form['from'] = [
-//      '#type' => 'select',
-//      '#title' => $this->t('From'),
-////      '#options' => $rates,
-//    ];
-    $form['from'] = [
+    $form['fromRate'] = [
       '#type' => 'textfield',
-      '#default_value' => $this->t('From'),
+      '#placeholder' => 'From',
     ];
-    $form['to'] = [
+    $form['toRate'] = [
       '#type' => 'textfield',
-      '#default_value' => $this->t('To'),
+      '#placeholder' => 'To',
       '#required' => true,
     ];
     $form['actions']['#type'] = 'actions';
@@ -57,8 +69,8 @@ class FixerIntegartionConvertValueForm extends FormBase
    */
   public function validateForm(array &$form, FormStateInterface $form_state)
   {
-    if (!$form_state->getValue('to')) {
-      $form_state->setErrorByName('to', $this->t('The field is required'));
+    if (!$form_state->getValue('toRate')) {
+      $form_state->setErrorByName('toRate', $this->t('The field is required'));
     }
   }
 
@@ -67,6 +79,23 @@ class FixerIntegartionConvertValueForm extends FormBase
    */
   public function submitForm(array &$form, FormStateInterface $form_state)
   {
+    try {
+      $amount = $form_state->getValue('amount');
+      $fromRate = $form_state->getValue('fromRate');
+      $toRate = $form_state->getValue('toRate');
 
+      $converted = $this->fixerService->convert($amount, $fromRate, $toRate);
+
+      $request = \Drupal::service('request_stack')->getCurrentRequest();
+      $session = $request->getSession();
+      $session->set('converted_value', $converted);
+
+      // Redirect to the result page.
+      $response = new RedirectResponse('/result-page');
+      $response->send();
+
+    } catch (\Exception $exception) {
+      $this->logger('error')->error($exception->getMessage());
+    }
   }
 }

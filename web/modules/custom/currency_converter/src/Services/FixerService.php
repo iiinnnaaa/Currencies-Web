@@ -10,7 +10,7 @@ use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 class FixerService implements FixerServiceInterface
 {
 
-  protected string $baseUrl = 'http://data.fixer.io/api';
+  protected string $baseUrl;
 
   protected mixed $apiKey;
 
@@ -23,23 +23,46 @@ class FixerService implements FixerServiceInterface
     $this->apiKey = $configFactory->get('fixer_integration.settings')->get('api_key');
     $this->httpClientFactory = $httpClientFactory;
     $this->logger = $loggerFactory->get('fixer_integration');
+    $this->baseUrl = 'http://data.fixer.io/api';
+  }
+
+  public function storeExchangeRates()
+  {
+    try {
+      $client = $this->httpClientFactory->fromOptions();
+      $url = $this->baseUrl . '/latest?access_key=' . $this->apiKey;
+
+      $response = $client->get($url);
+      $data = Json::decode($response->getBody());
+
+      $connection = \Drupal::service('database');
+      foreach ($data['rates'] as $key => $value) {
+        $connection->upsert('currency_rates')->fields([
+          'country' => $key,
+          'rate' => $value
+        ])->key('country')->execute();
+      }
+
+    } catch (\Exception $exception) {
+      $this->logger->error('Error retrieving exchange rates: @message', ['@message' => $exception->getMessage()]);
+    }
   }
 
   public function getExchangeRates()
   {
-    $client = $this->httpClientFactory->fromOptions();
-    $url = $this->baseUrl . '/latest?access_key=' . $this->apiKey;
-    try {
-      $response = $client->get($url);
-      $data = Json::decode($response->getBody());
-      return $data['rates'];
-    } catch (\Exception $exception) {
-      $this->logger->error('Error retrieving exchange rates: @message', ['@message' => $exception->getMessage()]);
-      return [];
+    $database = \Drupal::database();
+    $query = $database->select('currency_rates', 'cr');
+    $exchangeRates = $query->fields('cr', ['country', 'rate'])->execute()->fetchAll();
+
+    $convertedExchangeRates = [];
+    foreach ($exchangeRates as $rate) {
+      $convertedExchangeRates[] = (array)$rate;
     }
+
+    return $convertedExchangeRates;
   }
 
-  public function convert($value, $from, $to)
+  public function convert($amount, $fromRate, $toRate)
   {
 //    // Use API of fixer.io (paid plan)
 //    $client = $this->httpClientFactory->fromOptions();
@@ -54,11 +77,15 @@ class FixerService implements FixerServiceInterface
 //    }
 //  }
 
-    $rates = $this->getExchangeRates();
-    $to = strtoupper($to);
+    $exchangeRates = $this->getExchangeRates();
 
-    $convertedValue = $value * $rates[$to];
+    foreach ($exchangeRates as $rate) {
+      if ($rate['country'] === strtoupper($toRate)) {
+        $convertedValue = $amount * $rate['rate'];
+        return round($convertedValue, 2);
+      }
+    }
 
-    return round($convertedValue, 2);
+    return null;
   }
 }

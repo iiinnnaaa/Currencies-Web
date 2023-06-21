@@ -6,5 +6,5 @@ interface FixerServiceInterface
 {
   public function getExchangeRates();
 
-  public function convert($value, $from, $to);
+  public function convert($amount, $fromRate, $toRate);
 }

@@ -1,5 +1,5 @@
 currency_converter.fixer:
-  path: '/fixer'
+  path: '/rates'
   defaults:
     _controller: '\Drupal\currency_converter\Controller\FixerController::getExchangeRates'
     _title: 'Fixer Exchange Rates'
@@ -7,7 +7,7 @@ currency_converter.fixer:
     _permission: 'access content'
 
 currency_converter.fixer_form:
-  path: '/admin/config/system/currency_converter'
+  path: '/admin/config/system/fixer-key'
   defaults:
     _title: 'Fixer API Integration Settings'
     _form: '\Drupal\currency_converter\Form\FixerIntegrationSettingsForm'
@@ -16,9 +16,16 @@ currency_converter.fixer_form:
     _permission: 'administer site configuration'
 
 currency_converter.convert_form:
-  path: '/convert-currencies'
+  path: '/convert'
   defaults:
     _title: 'Example form'
     _form: '\Drupal\currency_converter\Form\FixerIntegartionConvertValueForm'
+  requirements:
+    _permission: 'access content'
+
+my_module.result_page:
+  path: '/result-page'
+  defaults:
+    _controller: '\Drupal\currency_converter\Controller\FixerController::convertedValuesPage'
   requirements:
     _permission: 'access content'
