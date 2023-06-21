@@ -25,3 +25,9 @@ To see exchange rates go to
 To convert values go to
   <b>/convert</b>
 
+
+# Screenshots
+
+![img.png](screenshot1.png)
+![img_1.png](screenshot2.png)
+![img_2.png](screenshot3.png)
