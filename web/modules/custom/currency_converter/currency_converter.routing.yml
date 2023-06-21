@@ -18,7 +18,7 @@ currency_converter.fixer_form:
 currency_converter.convert_form:
   path: '/convert'
   defaults:
-    _title: 'Example form'
+    _title: 'Convert form'
     _form: '\Drupal\currency_converter\Form\FixerIntegartionConvertValueForm'
   requirements:
     _permission: 'access content'

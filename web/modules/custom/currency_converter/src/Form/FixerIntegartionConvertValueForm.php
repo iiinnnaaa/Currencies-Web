@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
  */
 class FixerIntegartionConvertValueForm extends FormBase
 {
-
   protected FixerServiceInterface $fixerService;
 
   public function __construct(FixerServiceInterface $fixerService)
@@ -44,16 +43,20 @@ class FixerIntegartionConvertValueForm extends FormBase
     $form['amount'] = [
       '#type' => 'textfield',
       '#placeholder' => '123',
+      '#required' => true,
       '#title' => $this->t('Amount'),
     ];
     $form['fromRate'] = [
       '#type' => 'textfield',
-      '#placeholder' => 'From',
+      '#placeholder' => 'USD',
+      '#required' => true,
+      '#title' => $this->t('From'),
     ];
     $form['toRate'] = [
       '#type' => 'textfield',
-      '#placeholder' => 'To',
+      '#placeholder' => 'AMD',
       '#required' => true,
+      '#title' => $this->t('To'),
     ];
     $form['actions']['#type'] = 'actions';
     $form['actions']['submit'] = [
@@ -70,6 +73,8 @@ class FixerIntegartionConvertValueForm extends FormBase
   public function validateForm(array &$form, FormStateInterface $form_state)
   {
     if (!$form_state->getValue('toRate')) {
+      $form_state->setErrorByName('amount', $this->t('The field is required'));
+      $form_state->setErrorByName('fromRate', $this->t('The field is required'));
       $form_state->setErrorByName('toRate', $this->t('The field is required'));
     }
   }
